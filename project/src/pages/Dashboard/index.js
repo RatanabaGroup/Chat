@@ -1,16 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
+import SignIn from '../SignIn';
 
 export default function Dashboard(){
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
-      <Text>DASHBOARD</Text>
-      <Text>Nome: AAA</Text>
-      <Text>Mensagem: aaa</Text>
-      <Text>Nome: BBB</Text>
-      <Text>Mensagem: bbb</Text>
+      <Text>DASHBOARD = ChatRoom</Text>
+      <Button title="Login" 
+      onPress={ () => navigation.navigate(SignIn)}/>
     </View>
   );
 }
