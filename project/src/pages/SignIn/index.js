@@ -4,16 +4,89 @@ import {
   Platform, Image
 } from 'react-native';
 
+import auth from '@react-native-firebase/auth';
+import { useNavigation }  from '@react-navigation/native'
+
 export default function SignIn() {
+  const navigation = useNavigation();
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [type, setType] = useState(false); 
 
+  const [imageSize, setImageSize] = useState(150); 
+  const [inputFocused, setInputFocused] = useState(false); 
+  
+  const handleInputFocus = () => {
+    setImageSize(0);
+    setInputFocused(true);
+  }
+  const handleInputBlur = () => {
+    setImageSize(150);
+    setInputFocused(false);
+  }
+
+  function handleLogin(){
+    if (type) {
+      // Cadastrar
+      if (name === '' || email === '' || password === '') return;
+
+      auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then((user) => {
+        user.user.updateProfile({
+          displayName: name
+        })
+        .then(()=>{
+          navigation.goBack();
+        })
+
+      })
+      .catch((error) => {
+        if (error.code === 'auth/invalid-email') {
+          console.log('Email inválido!');
+        }
+    
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('Email já em uso!');
+        }
+
+        if (error.code === 'auth/wrong-password') {
+          console.log('Senha inválida!');
+        }
+      })
+
+    } else {
+
+      // Login
+      auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(()=>{
+        navigation.goBack();
+      })
+      .catch((error)=>{
+        if (error.code === 'auth/invalid-email') {
+          console.log('Email inválido!');
+        }
+
+        if (error.code === 'auth/wrong-password') {
+          console.log('Senha inválida!');
+        }
+      })
+
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
 
-      <Image style={styles.logo}
+      <Image
+        style={{
+          ...styles.logo,
+          width: inputFocused ? 0 : imageSize,
+          height: inputFocused ? 0 : imageSize,
+        }}
         source={require('./snow.png')}
       />
       <Text style={styles.title}>Ratanaba</Text>
@@ -28,6 +101,8 @@ export default function SignIn() {
         onChangeText={(text) => setName(text)}
         placeholder="Nome"
         placeholderTextColor="#99999B"
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
       />
       )}
 
@@ -37,18 +112,25 @@ export default function SignIn() {
         onChangeText={(text) => setEmail(text)}
         placeholder="Email"
         placeholderTextColor="#99999B"
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
       />
 
       <TextInput
         style={styles.input}
         value={password}
+        type="password"
         onChangeText={(text) => setPassword(text)}
         placeholder="Senha"
         placeholderTextColor="#99999B"
+        secureTextEntry={true}
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
       />
 
       <TouchableOpacity 
         style={[styles.buttonLogin, { backgroundColor: type ? "#EEA262" : "#2E54D4" } ]}
+        onPress={handleLogin}
       >
         <Text style={styles.buttonText}>
           {type ? "Cadastrar" : "Acessar"}
@@ -73,9 +155,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     marginTop: Platform.OS === 'android' ? 55 : 80,
-    marginRight: 12,
-    width: 150, 
-    height: 150
+    marginRight: 12
   },
   title: {
     fontSize: 28,
