@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity,
-        Image, Modal } from 'react-native';
+        Image, Modal, ActivityIndicator, FlatList, Alert } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import AddButton from '../../components/AddButton';
 import ModalGrupo from '../../components/ModalGrupo';
+import ChatList from '../../components/ChatList';
 
 export default function Dashboard(){
   const navigation = useNavigation();
@@ -16,6 +18,10 @@ export default function Dashboard(){
 
   const [user, setUser] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  
+  const [threads, setThreads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [updateScreen, setUpdateScreen] = useState(false);
 
   useEffect(()=>{
     const hasUser = auth().currentUser ? auth().currentUser.toJSON() : null;
@@ -23,6 +29,72 @@ export default function Dashboard(){
     setUser(hasUser);
 
   }, [isFocused]);
+
+
+  useEffect(()=>{
+    let isActive = true;
+
+    function getChats(){
+      firestore()
+      .collection('MESSAGE_THREADS')
+      .orderBy('lastMessage.createdAt', 'desc')
+      .limit(10)
+      .get()
+      .then((snapshot)=>{
+        const threads = snapshot.docs.map( documentSnapshot => {
+          return {
+            _id:  documentSnapshot.id,
+            name: '',
+            lastMessage: { text: '' },
+            ...documentSnapshot.data()
+          }
+        })
+        if(isActive){
+          setThreads(threads);
+          setLoading(false);
+          // console.log(threads)
+        }
+      })
+    }
+
+    getChats();
+
+    return () => {
+       isActive = false;
+    }
+
+  }, [isFocused, updateScreen]);
+
+  function deleteRoom(ownerId, idRoom){
+    if(ownerId !== user?.uid) return;
+
+    Alert.alert(
+      "Atenção!",
+      "Você tem certeza que deseja deletar essa sala?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => {},
+          style: "cancel"
+        },
+        {
+          text: "Confirmar",
+          onPress: () => handleDeleteRoom(idRoom)
+        }
+      ]
+    )
+
+  }
+
+  async function handleDeleteRoom(idRoom){
+    await firestore()
+    .collection('MESSAGE_THREADS')
+    .doc(idRoom)
+    .delete();
+
+    setUpdateScreen(!updateScreen);
+
+  }
 
   function handleSignOut(){
     auth()
@@ -34,6 +106,12 @@ export default function Dashboard(){
     .catch(()=>{
       console.log("Nao ha usuario logado")
     })
+  }
+
+  if(loading){
+    return(
+     <ActivityIndicator size="large" color="#555" style={{ marginTop: 250 }} />
+    )
   }
 
   return (
@@ -54,6 +132,15 @@ export default function Dashboard(){
           </TouchableOpacity>
       </View>
 
+      <FlatList
+        data={threads}
+        keyExtractor={ item => item._id}
+        showsVerticalScrollIndicator={false}
+        renderItem={ ({ item }) => (
+          <ChatList data={item} deleteRoom={ () => deleteRoom(item.owner, item._id) }  userStatus={user} />
+        )}
+      />
+
       <AddButton setVisible={ () => setModalVisible(true) }  userStatus={user} />
 
       <Modal 
@@ -61,7 +148,10 @@ export default function Dashboard(){
         animationType='fade'
         transparent={true}
       >
-        <ModalGrupo setVisible={ () => setModalVisible(false) } />
+        <ModalGrupo 
+        setVisible={ () => setModalVisible(false) } 
+        setUpdateScreen={ () => setUpdateScreen(!updateScreen) }
+        />
       </Modal>
 
     </SafeAreaView>

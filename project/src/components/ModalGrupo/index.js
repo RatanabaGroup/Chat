@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TextInput,
+  View, Text, StyleSheet, TextInput, Alert,
   TouchableOpacity, TouchableWithoutFeedback
 } from 'react-native';
 
@@ -27,7 +27,11 @@ export default function ModalGrupo({ setVisible, setUpdateScreen }) {
         })
 
         if (myThreads >= 4) {
-          alert('Você já atingiu o limite de grupo por usuario.');
+          Alert.alert(
+            "Atenção!",
+            "Você já atingiu o limite de grupo por usuário.",
+            [ { text: "OK", onPress: () => {}, style: "cancel" } ]
+          )
         } else {
           createRoom();
         }
@@ -43,13 +47,13 @@ export default function ModalGrupo({ setVisible, setUpdateScreen }) {
         name: room,
         owner: user.uid,
         lastMessage: {
-          text: `Grupo ${room} criado. Bem vindo(a)!`,
+          text: `${user.displayName} criou o grupo "${room}"`,
           createdAt: firestore.FieldValue.serverTimestamp(),
         }
       })
       .then((docRef) => {
         docRef.collection('MESSAGES').add({
-          text: `Grupo ${room} criado. Bem vindo(a)!`,
+          text: `${user.displayName} criou o grupo "${room}"`,
           createdAt: firestore.FieldValue.serverTimestamp(),
           system: true,
         })
