@@ -66,6 +66,7 @@ export default function Dashboard(){
   }, [isFocused, updateScreen]);
 
   function deleteRoom(ownerId, idRoom){
+    // Se está tentando deletar e nao é o dono
     if(ownerId !== user?.uid) return;
 
     Alert.alert(
@@ -93,7 +94,6 @@ export default function Dashboard(){
     .delete();
 
     setUpdateScreen(!updateScreen);
-
   }
 
   function handleSignOut(){

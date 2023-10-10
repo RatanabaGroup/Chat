@@ -3,6 +3,8 @@ import { createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import SignIn from '../pages/SignIn';
 import Dashboard from '../pages/Dashboard';
+import Chat from '../pages/Chat';
+
 const AppStack = createNativeStackNavigator();
 
 export default function AppRoutes(){
@@ -22,6 +24,14 @@ export default function AppRoutes(){
         options={{
           headerShown:false
         }}
+      />
+
+      <AppStack.Screen
+        name="Chat"
+        component={Chat}
+        options={ ({ route }) => ({
+          title: route.params.thread.name
+        })}
       />
 
     </AppStack.Navigator>
