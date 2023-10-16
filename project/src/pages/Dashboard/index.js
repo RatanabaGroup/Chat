@@ -12,6 +12,8 @@ import AddButton from '../../components/AddButton';
 import ModalGrupo from '../../components/ModalGrupo';
 import ChatList from '../../components/ChatList';
 
+// console.disableYellowBox = true;
+
 export default function Dashboard(){
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -127,7 +129,7 @@ export default function Dashboard(){
 
           <Image style={styles.logo} source={require('../SignIn/snow.png')} />
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={ () => navigation.navigate("Search")}>
             <MaterialIcons name="search" size={28} color="#FFF" />
           </TouchableOpacity>
       </View>

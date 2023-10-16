@@ -4,6 +4,7 @@ import { createNativeStackNavigator} from '@react-navigation/native-stack';
 import SignIn from '../pages/SignIn';
 import Dashboard from '../pages/Dashboard';
 import Chat from '../pages/Chat';
+import Search from '../pages/Search';
 
 const AppStack = createNativeStackNavigator();
 
@@ -32,6 +33,14 @@ export default function AppRoutes(){
         options={ ({ route }) => ({
           title: route.params.thread.name
         })}
+      />
+
+      <AppStack.Screen 
+        name="Search"
+        component={Search}
+        options={{ 
+          title: "Pesquise"
+        }}
       />
 
     </AppStack.Navigator>
