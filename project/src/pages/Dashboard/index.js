@@ -110,11 +110,11 @@ export default function Dashboard(){
     })
   }
 
-  if(loading){
-    return(
-     <ActivityIndicator size="large" color="#555" style={{ marginTop: 250 }} />
-    )
-  }
+  // if(loading){
+  //   return(
+  //    <ActivityIndicator size="large" color="#555" style={{ marginTop: 250 }} />
+  //   )
+  // }
 
   return (
     <SafeAreaView style={styles.container}>
