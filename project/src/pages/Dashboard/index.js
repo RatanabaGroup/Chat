@@ -27,7 +27,6 @@ export default function Dashboard(){
 
   useEffect(()=>{
     const hasUser = auth().currentUser ? auth().currentUser.toJSON() : null;
-    // console.log(hasUser);
     setUser(hasUser);
 
   }, [isFocused]);
@@ -54,7 +53,6 @@ export default function Dashboard(){
         if(isActive){
           setThreads(threads);
           setLoading(false);
-          // console.log(threads)
         }
       })
     }
@@ -68,6 +66,7 @@ export default function Dashboard(){
   }, [isFocused, updateScreen]);
 
   function deleteRoom(ownerId, idRoom){
+    console.log(typeof idRoom)
     // Se está tentando deletar e nao é o dono
     if(ownerId !== user?.uid) return;
 

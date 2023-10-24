@@ -79,7 +79,7 @@ export default function Chat({ route }){
         style={{ width: '100%'}}
         data={messages}
         keyExtractor={ item => item._id}
-        renderItem={ ({item}) => <ChatMessage data={item} />  }
+        renderItem={ ({item}) => <ChatMessage data={item} thread={thread?._id}/>  }
         inverted={true}
       />
 
