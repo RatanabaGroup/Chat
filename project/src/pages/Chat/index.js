@@ -85,8 +85,8 @@ export default function Chat({ route }){
 
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? "padding" : 'height'}
-        style={{ width: '100%' }}
-        keyboardVerticalOffset={100}
+        style={{ width: '100%'}}
+        keyboardVerticalOffset={-100}
       >
         <View style={styles.containerInput}>
 

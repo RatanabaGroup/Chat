@@ -92,6 +92,7 @@ export default function ChatMessage({ data, thread }) {
           {!isMyMessage &&
             <Text style={styles.name}>{data?.user?.displayName}</Text>
           }
+          
           {isEditing ? (
             <TextInput
               value={editedText}
