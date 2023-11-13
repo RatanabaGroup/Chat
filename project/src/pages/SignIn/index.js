@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView,
 
 import auth from '@react-native-firebase/auth';
 import { useNavigation }  from '@react-navigation/native'
+import { set } from 'date-fns';
 
 export default function SignIn() {
   const navigation = useNavigation();
@@ -12,6 +13,7 @@ export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [type, setType] = useState(false); 
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [imageSize, setImageSize] = useState(150); 
   const [inputFocused, setInputFocused] = useState(false); 
@@ -42,16 +44,20 @@ export default function SignIn() {
 
       })
       .catch((error) => {
+        console.log(error)
         if (error.code === 'auth/invalid-email') {
-          console.log('Email inválido!');
+          setErrorMessage('Email inválido!');
         }
     
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('Email já em uso!');
+        else if  (error.code === 'auth/email-already-in-use') {
+          setErrorMessage('Email já em uso!');
         }
 
-        if (error.code === 'auth/wrong-password') {
-          console.log('Senha inválida!');
+        else if (error.code === 'auth/weak-password') {
+          setErrorMessage('Senha fraca!');
+        }
+        else {
+          setErrorMessage("")
         }
       })
 
@@ -64,12 +70,13 @@ export default function SignIn() {
         navigation.goBack();
       })
       .catch((error)=>{
-        if (error.code === 'auth/invalid-email') {
-          console.log('Email inválido!');
-        }
-
-        if (error.code === 'auth/wrong-password') {
-          console.log('Senha inválida!');
+        console.log(error)
+        if (error.code === 'auth/invalid-login') {
+          setErrorMessage('Email ou senha incorretos!');
+        }else if (error.code === 'auth/invalid-email'){
+          setErrorMessage('Email inválido!');
+        } else {
+          setErrorMessage("")
         }
       })
 
@@ -91,7 +98,9 @@ export default function SignIn() {
       <Text style={{ marginBottom: 20, color: '#121212', }}>
         Fale na mesma língua de seus amigos!
       </Text>
-
+      <View style={{ marginBottom: 5 }}>
+        {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+      </View>
       { type && (
       <TextInput
         style={styles.input}
@@ -159,6 +168,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#121212',
+  },
+  errorMessage: {
+    color: 'red',
   },
   input: {
     color: '#121212',

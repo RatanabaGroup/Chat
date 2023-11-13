@@ -40,6 +40,7 @@ export default function AppRoutes() {
               onPress={() => {
                 navigation.navigate('ChatConfig');
               }}
+              
             >
               <Feather name="settings" size={24} color="#000"/>
             </TouchableOpacity>

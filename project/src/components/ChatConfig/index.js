@@ -1,20 +1,26 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
-export default function ChatConfig({ data, deleteRoom, userStatus }) {
-  
+
+export default function ChatConfig({ route }) {
+  // const user = auth().displayName.toJSON();
+  const { data, thread } = route.params || {};
+
+
   return (
     <SafeAreaView>
       <View style={styles.header}>
         <Text style={styles.nameText}>Participantes</Text>
       </View>
-
-      <TouchableOpacity onPress={() => deleteRoom && deleteRoom()}>
+      
+      <TouchableOpacity >
         <View style={styles.row}>
-
+        
           <View style={styles.content}>
-            <Text style={styles.contentText}>{data}</Text>
+            <Text style={styles.contentText}>{user}</Text>
           </View>
 
           <View style={styles.content}>
@@ -34,10 +40,11 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'center',
-    margin: 20,
+    marginTop: 50,
+    marginBottom: 40,
   },
   nameText: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#000',
     justifyContent: 'center'
