@@ -26,7 +26,6 @@ export default function Chat({ route }) {
 
   const { width, height } = Dimensions.get('screen');
   const [region, setRegion] = useState(null);
-  // const [markers, setMarkers] = useState([]);
 
   useEffect(() => {
     const unsubscribeListener = firestore().collection('MESSAGE_THREADS')
@@ -97,8 +96,6 @@ export default function Chat({ route }) {
 
   function getLocation() {
     Geolocation.getCurrentPosition(info => {
-      // console.log("LAT", info.coords.latitude)
-      // console.log("LONG ", info.coords.longitude)
       setRegion({
         latitude: info.coords.latitude,
         longitude: info.coords.longitude,
@@ -111,24 +108,6 @@ export default function Chat({ route }) {
       timeout: 2000,
     })
   }
-
-  // function newMarker(e) {
-  //   let dates = {
-  //     key: markers.length,
-  //     coords: {
-  //       latitude: e.nativeEvent.coordinate.latitude,
-  //       longitude: e.nativeEvent.coordinate.longitude
-  //     },
-  //     pinColor: '#ff0000'
-  //   }
-  //   setRegion({
-  //     latitude: e.nativeEvent.coordinate.latitude,
-  //     longitude: e.nativeEvent.coordinate.longitude,
-  //     latitudeDelta: 0.0922,
-  //     longitudeDelta: 0.0421
-  //   })
-  //   setMarkers(oldArray => [...oldArray, dates])
-  // }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -157,13 +136,7 @@ export default function Chat({ route }) {
           minZoomLevel={18}
           showsUserLocation={true}
           LoadingEnabLed={true}
-          // onPress={(e) => newMarker(e)}
         >
-          {/* {markers.map(marker => {
-            return (
-              <Marker key={marker.key} coordinate={marker.coords} pinColor={marker.pinColor} />
-            )
-          })} */}
           <Marker coordinate={region} />
         </MapView>
       )}

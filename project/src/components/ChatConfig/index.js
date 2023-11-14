@@ -1,39 +1,51 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-
 export default function ChatConfig({ route }) {
-  // const user = auth().displayName.toJSON();
-  const { data, thread } = route.params || {};
+  const [participants, setParticipants] = useState([]);
 
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      const participantsSnapshot = await firestore()
+        .collection('MESSAGE_THREADS')
+        .doc(route.params.thread.name)
+        .collection('PARTICIPANTS')
+        .get();
+
+      const participantsData = participantsSnapshot.docs.map((doc) => doc.data());
+      setParticipants(participantsData);
+    };
+
+    fetchParticipants();
+  }, []);
 
   return (
     <SafeAreaView>
       <View style={styles.header}>
         <Text style={styles.nameText}>Participantes</Text>
       </View>
-      
-      <TouchableOpacity >
-        <View style={styles.row}>
-        
-          <View style={styles.content}>
-            <Text style={styles.contentText}>{user}</Text>
-          </View>
 
-          <View style={styles.content}>
-            <Text style={styles.contentText}>cargo</Text>
-          </View>
-
-        </View>
-
-        <View style={styles.bottomBorder} />
-
-      </TouchableOpacity>
+      <FlatList
+        data={participants}
+        keyExtractor={(item) => item.uid}
+        renderItem={({ item }) => (
+          <TouchableOpacity>
+            <View style={styles.row}>
+              <View style={styles.content}>
+                <Text style={styles.contentName}>{item.name}</Text>
+              </View>
+              <View style={styles.content}>
+                <Text style={styles.contentCargo}>{item.position}</Text>
+              </View>
+            </View>
+            <View style={styles.bottomBorder} />
+          </TouchableOpacity>
+        )}
+      />
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -56,11 +68,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginVertical: 4,
+    marginHorizontal: 30
   },
   content: {
     flexDirection: 'row',
   },
-  contentText: {
+  contentName: {
+    color: '#000',
+    fontSize: 18,
+    marginTop: 2,
+  },
+  contentCargo: {
     color: '#8B8B8B',
     fontSize: 16,
     marginTop: 2,

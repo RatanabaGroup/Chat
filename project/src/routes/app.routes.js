@@ -38,9 +38,10 @@ export default function AppRoutes() {
           headerRight: () => (
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('ChatConfig');
+                navigation.navigate('ChatConfig', {
+                  thread: route.params.thread.name,
+                });
               }}
-              
             >
               <Feather name="settings" size={24} color="#000"/>
             </TouchableOpacity>

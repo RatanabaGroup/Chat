@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import {
-  View, Text, StyleSheet, TextInput, Alert,
-  TouchableOpacity, TouchableWithoutFeedback
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert,
+         TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -13,7 +11,6 @@ export default function ModalGrupo({ setVisible, setUpdateScreen }) {
 
   function handleButtonCreate() {
     if (room === '') return;
-
     //1 usuario pode criar só 4 grupos
     firestore().collection('MESSAGE_THREADS')
       .get()
@@ -35,9 +32,27 @@ export default function ModalGrupo({ setVisible, setUpdateScreen }) {
         } else {
           createRoom();
         }
-
       })
+  }
 
+  function addAllUsersToParticipants(docRef) {
+    firestore()
+      .collection('USERS')
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((userDoc) => {
+          const userId = userDoc.id;
+          const userData = userDoc.data();
+  
+          docRef.collection('PARTICIPANTS').doc(userId).set({
+            name: userData.name,
+            position: 'membro',
+          });
+        });
+      })
+      .catch((error) => {
+        console.error('Erro ao obter usuários:', error);
+      });
   }
 
   function createRoom() {
@@ -52,6 +67,13 @@ export default function ModalGrupo({ setVisible, setUpdateScreen }) {
         }
       })
       .then((docRef) => {
+        docRef.collection('PARTICIPANTS').doc(user.uid).set({
+          name: user.displayName,
+          position: 'membro',
+        });
+  
+        addAllUsersToParticipants(docRef);
+
         docRef.collection('MESSAGES').add({
           text: `${user.displayName} criou o grupo "${room}"`,
           createdAt: firestore.FieldValue.serverTimestamp(),
@@ -66,7 +88,6 @@ export default function ModalGrupo({ setVisible, setUpdateScreen }) {
       .catch((err) => {
         console.log(err);
       })
-
   }
 
   return (
