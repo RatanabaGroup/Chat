@@ -12,7 +12,7 @@ export default function ChatMessage({ data, thread }) {
     return data?.user?._id === user.uid
   }, [data])
 
-  console.log(data);
+  // console.log(data);
 
   function editMessage(id_user, id) {
     if (id_user !== user?.uid) return;
